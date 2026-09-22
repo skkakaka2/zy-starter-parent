@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: zy-demo-service
+  datasource:
+    url: jdbc:h2:mem:zy_demo;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+  autoconfigure:
+    # Redis is kept as a declared demo dependency, but local/test runs deliberately require no Redis service.
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration
+      - org.redisson.spring.starter.RedissonAutoConfigurationV2
+  cloud:
+    nacos:
+      # Local/test defaults never connect to Nacos. Applications enable these only with real Nacos configuration.
+      discovery:
+        enabled: false
+      config:
+        enabled: false
+        import-check:
+          enabled: false
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  # Keep Springdoc's standard UI resource path: /swagger-ui/index.html.
+
+zy:
+  mybatis:
+    pagination-max-limit: 500
+    pagination-overflow: false
+  documentation:
+    group-id: default
+    group-display-name: Demo API
+    description: zy starter common module demonstration API
+    version: 1.0.0
+  security:
+    jwt:
+      # Runtime deployments must inject a Base64URL value that decodes to at least 32 bytes.
+      secret: ${ZY_SECURITY_JWT_SECRET}
+      issuer: zy-demo-service
+      expiration: 2h
+
+# Optional real-Nacos configuration (do not enable for local/test runs):
+# spring:
+#   config:
+#     import: optional:nacos:zy-demo-service.yaml?group=DEFAULT_GROUP
+#   cloud:
+#     nacos:
+#       discovery:
+#         enabled: true
+#         server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+#       config:
+#         enabled: true
+#         server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}

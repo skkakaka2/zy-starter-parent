@@ -1,0 +1,25 @@
+# ============================================================
+# zy-common-security 配置片段（模板）
+# 用法：复制到业务服务的 application.yml；不要把密钥提交到代码库。
+# @EnableFeignClients 仅用于 OpenFeign 客户端扫描，与 JWT/Spring Security 无关。
+# ============================================================
+zy:
+  security:
+    jwt:
+      enabled: true
+      # 必填：由部署环境注入的 Base64URL HMAC 密钥，解码后至少 32 字节（HS256）。
+      # 例如：${ZY_SECURITY_JWT_SECRET}
+      secret: ${ZY_SECURITY_JWT_SECRET}
+      issuer: zy-starter
+      expiration: PT2H
+      permit-paths:
+        - /auth/**
+        - /login
+        - /register
+        - /error
+        - /actuator/health
+        - /v3/api-docs/**
+        - /v3/api-docs.yaml
+        - /swagger-ui/**
+        - /swagger-ui.html
+        - /webjars/**

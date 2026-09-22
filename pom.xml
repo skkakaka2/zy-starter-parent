@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.5.16</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.zy</groupId>
+  <artifactId>zy-starter-parent</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>zy-starter-parent</name>
+  <description>所有后端微服务的公共基础包：统一版本管控 + 公共模块聚合</description>
+
+  <modules>
+    <module>zy-common-core</module>
+    <module>zy-common-web</module>
+    <module>zy-common-mybatis</module>
+    <module>zy-common-redis</module>
+    <module>zy-common-security</module>
+    <module>zy-common-doc</module>
+    <module>zy-common-feign</module>
+    <module>zy-demo-service</module>
+  </modules>
+
+  <properties>
+    <!-- 基础：Java 21 + UTF-8（java.version 被 Boot 父 pom 用于编译器） -->
+    <java.version>21</java.version>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- 微服务版本火车（2026-09-10 中央仓库已验存在，见 PLAN.md） -->
+    <spring-cloud.version>2025.0.0</spring-cloud.version>
+    <spring-cloud-alibaba.version>2025.0.0.0</spring-cloud-alibaba.version>
+    <!-- 持久层 / 工具 -->
+    <mybatis-plus.version>3.5.17</mybatis-plus.version>
+    <hutool.version>5.8.47</hutool.version>
+    <jjwt.version>0.12.7</jjwt.version>
+    <!-- 文档 / 缓存 / 构建插件（大版本已按 Boot3 线选定，勿跨大版本升级） -->
+    <springdoc.version>2.9.1</springdoc.version>
+    <redisson.version>3.52.0</redisson.version>
+    <!-- jackson.version 必须与 Boot 3.5.16 的 jackson-bom.version(2.21.4) 对齐；
+         原因：jjwt-bom 的父 pom(jjwt-root) 把 jackson-databind 钉死在 2.12.7.1，
+         会透过 BOM import 覆盖 Boot 的版本，升级 Boot 时同步改这里 -->
+    <jackson.version>2.21.4</jackson.version>
+    <flatten-maven-plugin.version>1.8.0</flatten-maven-plugin.version>
+    <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
+    <!-- 环境占位，真实配置放 Nacos -->
+    <profile.env>dev</profile.env>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- 版本火车 BOM：只定版本，不引入依赖 -->
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.alibaba.cloud</groupId>
+        <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+        <version>${spring-cloud-alibaba.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-bom</artifactId>
+        <version>${mybatis-plus.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>cn.hutool</groupId>
+        <artifactId>hutool-bom</artifactId>
+        <version>${hutool.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-bom</artifactId>
+        <version>${jjwt.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Boot3 线三方 starter：版本锁定 -->
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>${springdoc.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.redisson</groupId>
+        <artifactId>redisson-spring-boot-starter</artifactId>
+        <version>${redisson.version}</version>
+      </dependency>
+      <!-- 版本纠偏（必须放在所有 BOM import 之后，后声明优先）：
+           jjwt-bom 会把 jackson-databind 覆盖成 2.12.7.1，这里强制纠回 Boot 对齐版本 -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- 父层只放真正全局的依赖，其余下沉到各 common 模块 -->
+  <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- 版本由 Boot 父 pom 管理，这里只做配置 -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <release>21</release>
+            <encoding>UTF-8</encoding>
+            <parameters>true</parameters>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <failIfNoTests>false</failIfNoTests>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+        </plugin>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+        <!-- 自有版本，需显式锁定 -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>flatten-maven-plugin</artifactId>
+          <version>${flatten-maven-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>${versions-maven-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <!-- 环境占位：真实配置放 Nacos，这里只切换 profile.env -->
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <profile.env>dev</profile.env>
+      </properties>
+    </profile>
+    <profile>
+      <id>test</id>
+      <properties>
+        <profile.env>test</profile.env>
+      </properties>
+    </profile>
+    <profile>
+      <id>prod</id>
+      <properties>
+        <profile.env>prod</profile.env>
+      </properties>
+    </profile>
+  </profiles>
+</project>

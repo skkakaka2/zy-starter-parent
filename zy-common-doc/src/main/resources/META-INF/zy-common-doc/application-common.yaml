@@ -1,0 +1,19 @@
+# 此模板不会被自动加载；请按需放入应用自身配置或配置中心。
+zy:
+  documentation:
+    enabled: true
+    # title 为空时依次使用 spring.application.name + " API" 和 "Application API"。
+    title: ""
+    group-id: default
+    group-display-name: Default API
+    description: API documentation
+    version: 1.0.0
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui/index.html
+
+# 调用方须在安全策略中显式放行：
+# /v3/api-docs/**、/swagger-ui/**、/swagger-ui.html、/webjars/**

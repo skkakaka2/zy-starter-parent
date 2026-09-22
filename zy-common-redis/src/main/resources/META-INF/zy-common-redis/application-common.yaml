@@ -1,0 +1,21 @@
+# 业务服务使用 Boot/Lettuce 的连接配置。
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+  # 如需 Redisson 独立配置，可启用下列片段；其地址不得与 spring.data.redis 不一致。
+  redis:
+    redisson:
+      config: |
+        singleServerConfig:
+          address: "redis://localhost:6379"
+
+zy:
+  redis:
+    cache-ttl: 10m
+    cache-prefix: ""
+    lock-prefix: ""
+    lock-wait-time: 2s
+    lock-lease-time: 30s

@@ -1,0 +1,15 @@
+# 请将所需配置复制到业务服务的 application.yml；本模板不会被自动加载。
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+zy:
+  mybatis:
+    pagination-max-limit: 500
+    pagination-overflow: false

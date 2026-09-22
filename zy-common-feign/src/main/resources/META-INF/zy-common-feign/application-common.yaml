@@ -1,0 +1,18 @@
+# 此模板不会被自动加载；调用方请在自己的配置中心或 application.yaml 中按需启用。
+spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connect-timeout: 2000
+            read-timeout: 5000
+            logger-level: basic
+            # 公共组件默认 Retryer.NEVER_RETRY；如业务需要重试，必须显式声明重试器及其次数、间隔和幂等保障。
+
+feign:
+  sentinel:
+    enabled: false # 按需改为 true 后再配置 Sentinel 规则。
+
+# 调用方服务在启动类显式使用 @EnableFeignClients(basePackages = "调用方 Feign 接口包")。
+# 选择 Nacos 作为注册中心时，由应用自行添加 Nacos Discovery 依赖及连接配置。

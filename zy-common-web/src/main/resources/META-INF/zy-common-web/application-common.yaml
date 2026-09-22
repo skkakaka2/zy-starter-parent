@@ -1,0 +1,39 @@
+# ============================================================
+# zy-common-web 配置片段（模板）
+# 用法：复制需要的段落到业务服务的 application.yml，勿直接改本文件
+# 所有开关均有默认值，零配置即可生效，这里只写需要覆盖的差异项
+# ============================================================
+zy:
+  web:
+    cors:
+      enabled: true                # 关闭则置 false（如由网关统一处理跨域）
+      allowed-origins:             # 用 originPatterns，支持 credentials + *
+        - "*"
+      allowed-headers:
+        - "*"
+      allowed-methods:
+        - "*"
+      exposed-headers:
+        - X-Trace-Id
+      # 默认 false；仅在 allowed-origins 收窄为可信域名时按需开启 Cookie 凭证。
+      # Bearer Token 通过 Authorization 请求头发送，不依赖此开关。
+      allow-credentials: false
+      max-age: 3600
+    trace:
+      enabled: true
+      header-name: X-Trace-Id
+    log:
+      enabled: true
+      slow-threshold-ms: 3000      # 超过打 WARN
+    validation:
+      fail-fast: false             # true 只返回第一个校验错误
+
+# ---- 建议同时配置的 Boot 项 ----
+# spring:
+#   mvc:
+#     throw-exception-if-no-handler-found: true   # 404 走全局异常，返回统一 Result
+#   web:
+#     resources:
+#       add-mappings: false                       # 纯 API 服务建议关闭静态资源映射
+#   jackson:
+#     default-property-inclusion: non_null        # 可选：null 字段不序列化
