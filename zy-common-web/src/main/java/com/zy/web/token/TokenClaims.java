@@ -14,6 +14,4 @@ public final class TokenClaims {
     /** 过期时间，Unix 时间戳（秒） */
     public static final String EXP = "exp";
 
-    private TokenClaims() {
-    }
 }
